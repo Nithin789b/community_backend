@@ -27,15 +27,19 @@ const userSchema = new mongoose.Schema({
         {
             state: {
                 type: String,
-                required: false
+                required: true
             },
             city: {
                 type: String,
-                required: false
+                required: true
             },
             district: {
                 type: String,
-                required: false
+                required: true
+            },
+            country: {
+                type: String,
+                required: true
             }
         }
     ],

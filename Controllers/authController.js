@@ -7,7 +7,7 @@ dotenv.config();
 
 export const Register = async (req, res) => {
   try {
-    const { name, email, mobile, dob, gender,district, state, city } = req.body;
+    const { name, email, mobile, dob, gender,district, state, city,country } = req.body;
 
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) {
@@ -23,7 +23,7 @@ export const Register = async (req, res) => {
       mobile,
       dob,
       gender,
-      address: [{ state, city, district }],
+      address: [{ state, city, district ,country}],
     });
 
     const userObject = newUser.toObject();
