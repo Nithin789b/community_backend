@@ -4,15 +4,16 @@ import twilio from "twilio";
 import dotenv from "dotenv";
 dotenv.config();
 
+
 export const Register = async (req, res) => {
   try {
-    const { name, email, mobile, age, gender } = req.body;
+    const { name, email, mobile, dob, gender,district, state, city,country } = req.body;
 
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) {
       return res.status(400).json({
         success: false,
-        message: "mobile number already exists",
+        message: "Mobile number already exists",
       });
     }
 
@@ -20,32 +21,36 @@ export const Register = async (req, res) => {
       name,
       email,
       mobile,
-      age,
+      dob,
       gender,
+      address: [{ state, city, district ,country}],
     });
 
+    const userObject = newUser.toObject();
+    delete userObject.password;
+
     const token = jwt.sign(
-      { id: newUser._id },
+      { user: userObject },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    res.cookie("Authtoken", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "strict",
+    return res.status(200).json({
+      success: true,
+      message: "Registration successful",
+      token,
+      user: userObject,
     });
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Registration successful" });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Internal server error from register.",
+      message: "Internal server error from register",
     });
   }
 };
+
+
 
 export const sendOtp = async (req, res) => {
   try {
@@ -63,15 +68,21 @@ export const sendOtp = async (req, res) => {
         channel: "sms",
       });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "OTP sent successfully",
       sid: otpResponse.sid,
     });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to send OTP" });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send OTP",
+    });
   }
 };
+
+
 
 export const verifyOtp = async (req, res) => {
   try {
@@ -94,90 +105,85 @@ export const verifyOtp = async (req, res) => {
         success: true,
         message: "OTP verified successfully",
       });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP",
-      });
     }
+
+    return res.status(400).json({
+      success: false,
+      message: "Invalid OTP",
+    });
+
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "OTP verification failed",
     });
   }
 };
 
+
+
+
 export const Login = async (req, res) => {
   try {
     const { mobile } = req.body;
-    const user = await User.findOne({ mobile });
 
+    const user = await User.findOne({ mobile });
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "user not found!" });
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
+    const userObject = user.toObject();
+    delete userObject.password;
+
     const token = jwt.sign(
-      { id: user._id },
+      { user: userObject },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    res.cookie("Authtoken", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "strict",
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user: userObject,
     });
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Login successful!" });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Internal server error from login.",
+      message: "Internal server error from login",
     });
   }
 };
+
+
 
 export const CheckAuth = async (req, res) => {
   try {
-    const user = await User.findById(res.userId);
+    const user = req.user; 
 
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "No user with user id!",
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      message: "Authorized user",
+      user,
+    });
 
-    res
-      .status(200)
-      .json({ success: true, message: "Authorized user", user });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Internal server error from check auth.",
+      message: "Internal server error from check auth",
     });
   }
 };
 
-export const Logout = async (req, res) => {
-  try {
-    res.clearCookie("Authtoken", {
-      httpOnly: true,
-      sameSite: "strict",
-    });
 
-    res
-      .status(200)
-      .json({ success: true, message: "Logout successful" });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error from logout.",
-    });
-  }
+
+export const Logout = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
 };
