@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    mobile:{
+    mobile: {
         type: String,
         required: true
     },
@@ -13,14 +13,33 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    gender : {
+    gender: {
         type: String,
         required: true
     },
-    age : {
-        type: Number,
+    dob: {
+        type: String,
         required: true
     },
+
+
+    address: [
+        {
+            state: {
+                type: String,
+                required: false
+            },
+            city: {
+                type: String,
+                required: false
+            },
+            district: {
+                type: String,
+                required: false
+            }
+        }
+    ],
+
     otp: {
         type: String,
         default: null
@@ -29,7 +48,6 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null
     }
-
 });
 
-export const User = mongoose.model('user', userSchema);
+export const User = mongoose.model("user", userSchema);
