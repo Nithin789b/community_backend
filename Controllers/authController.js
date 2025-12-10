@@ -7,7 +7,7 @@ dotenv.config();
 
 export const Register = async (req, res) => {
   try {
-    const { name, email, mobile, dob, gender,district, state, city,country } = req.body;
+    const { name, email, mobile, dob, gender,city,district, state } = req.body;
 
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) {
@@ -23,7 +23,7 @@ export const Register = async (req, res) => {
       mobile,
       dob,
       gender,
-      address: [{ state, city, district ,country}],
+      address: [{ state, city, district }],
     });
 
     const userObject = newUser.toObject();
@@ -43,6 +43,7 @@ export const Register = async (req, res) => {
     });
 
   } catch (error) {
+    
     return res.status(500).json({
       success: false,
       message: "Internal server error from register",
@@ -55,18 +56,17 @@ export const Register = async (req, res) => {
 export const sendOtp = async (req, res) => {
   try {
     const { mobile } = req.body;
-
     const client = twilio(
       process.env.TWILIO_ACCOUNT_SID,
       process.env.TWILIO_AUTH_TOKEN
     );
-
     const otpResponse = await client.verify.v2
       .services(process.env.TWILIO_SERVICE_SID)
       .verifications.create({
         to: `+91${mobile}`,
         channel: "sms",
       });
+      
 
     return res.status(200).json({
       success: true,
@@ -75,6 +75,7 @@ export const sendOtp = async (req, res) => {
     });
 
   } catch (error) {
+    
     return res.status(500).json({
       success: false,
       message: "Failed to send OTP",
@@ -143,7 +144,7 @@ export const Login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
+    console.log(token)
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -187,3 +188,20 @@ export const Logout = async (req, res) => {
     message: "Logout successful",
   });
 };
+
+
+export const getProfile = async(req,res) =>{
+  try {
+    const user = req.user ;
+    return res.status(200).json({
+      success:true,
+      message:"User profile fetched successfully",
+      user
+    }) ;
+  } catch (error) {
+    return res.status(500).json({
+      success:false,  
+      message:"Internal server error from get profile"
+    }) ;
+  } 
+}
