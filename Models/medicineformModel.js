@@ -15,10 +15,10 @@ const medicineformSchema = new mongoose.Schema({
         enum: ['Tablet', 'Capsule', 'Syrup', 'Injection', 'Ointment', 'Inhaler', 'Drops', 'Other']
     },
 
-    frequency: { type: String, required: true ,enum: ['Once a day', 'Twice a day', 'Thrice a day', 'As needed','custom']},
+    frequency: { type: String, required: true ,enum: ['Once a day', 'Twice a day', 'Thrice a day']},
     timeslots : {
         type: [String], 
-        default: []
+        default: [],
     },
     startDate: { type: String, required: true },
     endDate: { type: String, required: false },
