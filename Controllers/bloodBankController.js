@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 // import cloudinary from "../Utils/cloudinary.js";
 import jwt from "jsonwebtoken";
-
+import {Camp} from "../Models/campModel.js";
 
    
 export const signupBloodBank = async (req, res) => {
@@ -139,5 +139,112 @@ export const updateBloodUnits = async (req, res) => {
   } catch (error) {
     console.error("UPDATE BLOOD UNITS ERROR:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+
+export const getBloodBankDetails=async(req,res)=>{
+  try{
+    const bloodBankId=req.bloodBank.id;
+    const bloodBank=await BloodBank.findById(bloodBankId).select('-password');
+    if(!bloodBank){
+      return  res.status(404).json({ message: "Blood bank not found" });
+    }
+    res.status(200).json({
+      success:true,
+      bloodBank
+    });
+
+  }catch{
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+export const createCamp = async (req, res) => {
+  try {
+    const {
+      campTitle,
+      location,
+      date,
+      time,
+      campPoster,
+      sendNotifications,
+    } = req.body;
+
+    // Validation
+    if (!campTitle || !location || !date || !time) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be filled",
+      });
+    }
+
+    const newCamp = await Camp.create({
+      campTitle,
+      location,
+      date,
+      time,
+      campPoster,
+      sendNotifications,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Camp created successfully",
+      data: newCamp,
+    });
+  } catch (error) {
+    console.error("Create Camp Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while creating camp",
+    });
+  }
+};
+
+
+export const getAllCamps = async (req, res) => {
+  try {
+    const camps = await Camp.find().sort({ date: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: camps.length,
+      data: camps,
+    });
+  } catch (error) {
+    console.error("Get Camps Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching camps",
+    });
+  }
+};
+
+export const getCampById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const camp = await Camp.findById(id);
+
+    if (!camp) {
+      return res.status(404).json({
+        success: false,
+        message: "Camp not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: camp,
+    });
+  } catch (error) {
+    console.error("Get Camp Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Invalid camp ID",
+    });
   }
 };
