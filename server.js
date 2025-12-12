@@ -8,6 +8,8 @@ import bloodRoutes from './Routes/bloodBankRoutes.js';
 import adminRoutes from "./Routes/adminRoutes.js";
 
 
+import mailRouter from './Routes/mailRoutes.js';
+import medicineRoutes from './Routes/medicineRoutes.js';
 
 
 const app = express();
@@ -20,6 +22,8 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/blood', router);
 app.use('/api/bloodbank', bloodRoutes);
 app.use("/api/admin", adminRoutes);
+app.use('/api/mail', mailRouter);
+app.use('/api/medicine',medicineRoutes );
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

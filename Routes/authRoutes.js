@@ -5,7 +5,9 @@ import {
   Register,
   Login,
   Logout,
-  CheckAuth
+  CheckAuth,
+  getProfile,
+  updateProfile
 } from "../Controllers/authController.js";
 import { verifyToken } from "../Middlewares/verifyToken.js";
 
@@ -19,5 +21,7 @@ AuthRoutes.post("/register", Register);
 AuthRoutes.post("/login", Login);
 AuthRoutes.get("/check-auth", verifyToken, CheckAuth);
 AuthRoutes.post("/logout", Logout);
+AuthRoutes.get("/profile", verifyToken, getProfile );
+AuthRoutes.put("/update-profile",verifyToken,updateProfile);
 
 export default AuthRoutes;

@@ -19,7 +19,7 @@ const donateformSchema = new mongoose.Schema({
     },
 
     likeToDonate: {
-        type: String,
+        type: [String],
         required: true,
         enum: ['whole Blood', 'Plasma', 'Platelets', 'RBC', 'WBC']
     },
@@ -33,9 +33,11 @@ const donateformSchema = new mongoose.Schema({
             },
             lastDonationDate: {
                 type: String,
-                required: true
+                required: false
             }
         }
+
+        
     ],
 
    
@@ -62,9 +64,9 @@ const donateformSchema = new mongoose.Schema({
     },
 
     shareLocation: {
-        type: String,
+        type: Boolean,
         required: true,
-        enum: ['yes', 'no']
+        default: false
     }
 
 }, { timestamps: true });

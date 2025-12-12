@@ -36,10 +36,6 @@ const userSchema = new mongoose.Schema({
             district: {
                 type: String,
                 required: true
-            },
-            country: {
-                type: String,
-                required: true
             }
         }
     ],
