@@ -90,7 +90,7 @@ export const submitDonationForm = async (req, res) => {
 export const getAllDonationForms = async (req, res) => {
   try {
     const forms = await DonateForm.find()
-      .populate("user", "name email mobile gender");
+      .populate("user", "name email mobile gender address");
 
     return res.status(200).json({
       success: true,
